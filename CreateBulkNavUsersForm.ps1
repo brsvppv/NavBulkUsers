@@ -5,20 +5,25 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
-        Title="Create NavUsers From File" Height="190" Width="300" ResizeMode="NoResize" ShowInTaskbar="True">
-    <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Margin="0,0,0,0" Height="155" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300">
+        Title="Create NavUsers From File" Height="255" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+    <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Margin="0,0,0,0" Height="255" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300">
         <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="230" Margin="26,15,0,0" TextWrapping="Wrap" Text="Select CSV User List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
         <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="26,79,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="117,79,0,0" VerticalAlignment="Top" Width="158"/>
+        <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="117,80,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"/>
         <Label Name="lblPermSet" Content="Permission Set" HorizontalAlignment="Left" Margin="26,105,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxPermissionSet" HorizontalAlignment="Left" Margin="117,105,0,0" VerticalAlignment="Top" Width="158">
+        <ComboBox Name="cbxPermissionSets" HorizontalAlignment="Left" Margin="117,105,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0">
             <ComboBoxItem Content="BASIC"/>
             <ComboBoxItem Content="SUPER"/>
+        </ComboBox>
+        <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="26,130,0,0" VerticalAlignment="Top"/>
+          <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="117,130,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0">
+            <ComboBoxItem Content="Full"/>
+            <ComboBoxItem Content="Limited"/>
         </ComboBox>
         <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="26,51,0,0" TextWrapping="Wrap" Text="Dir To Export" VerticalAlignment="Top" Width="231" FontSize="11" IsReadOnly="true"/>
         <Button Name="btnUserSourceFile" Content="..." Margin="255,15,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="20"/>
         <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="255,51,0,0" VerticalAlignment="Top" Width="20" Height="20"/>
-        <Button Name="btnPerformAction" Content="Perform Action" Margin="27,132,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="248"/>
+        <Button Name="btnPerformAction" Content="Perform Action" Margin="27,190,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="248"/>
     </Grid>
 </Window>
 "@
@@ -68,10 +73,10 @@ $buildversion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($file).File
       
 $boolBuildExist = [string]::IsNullOrEmpty($buildversion) 
 if ($boolBuildExist -eq $false) {
-        
-    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected." + $OFS + "Version:""$buildversion", 'Error No Install', 'OK', 'information')
-    Get-Package | Where-Object { $_.version -eq $buildversion } | Format-Table -AutoSize
-
+    $Packages = Get-Package | Where-Object { $_.version -eq $buildversion } | Format-Table -AutoSize
+    
+    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected." + $OFS + "Version: $buildversion", 'Error No Install', 'OK', 'information')
+    
 }
 else {
     [System.Windows.MessageBox]::Show("No Dynamcis NAV/BC Version Detected", 'Error', 'OK', 'Error')
@@ -98,7 +103,13 @@ else {
     }
     $intVersion = [int]::Parse($vdir)
 }
+$FORM.Add_Loaded({       
 
+$Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
+foreach ($Permission in $Permissions) {    
+     $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
+    }
+})
 $navServicesList = Get-NAVServerInstance | Where-Object { ($_.State -eq "Running") }
 foreach ($service in $navServicesList) {
     $cbxNavInstance.Items.Add($service.ServerInstance.Substring(27)) 
@@ -114,7 +125,7 @@ Function PickUserFile {
     If ($FileBrowser.FileNames -like "*\*")
     { $fullPath = $FileBrowser.FileNames }
     else {
-        Write-Host
+        
         [System.Windows.MessageBox]::Show( "Cancelled by user. `nYou need to select file.  `n $_", 'No FIle Selected', 'OK', 'Error')
     }
     $filedirectory = Split-Path -Parent $FileBrowser.FileName
@@ -154,6 +165,17 @@ function FindFolders {
     
 }
 
+$cbxNavInstance.Add_SelectionChanged( {
+$cbxPermissionSets.Items.Clear()
+$Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
+foreach ($Permission in $Permissions) {    
+     $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
+    }
+})
+$cbxPermissionSet.Add_GotFocus( {
+  
+})
+
 $btnUserSourceFile.Add_click( {
         PickUserFile    
         #$navUserNames = $txtUserFile.Text
@@ -162,7 +184,6 @@ $btnUserSourceFile.Add_click( {
 $btnSavePswdFile.Add_click( {
         FindFolders
         #$filepath = $txtPswdFile.Text
-
     })
 
 #$ConfirmResult = -1
@@ -170,8 +191,7 @@ $OFS = "`r`n"
 
 $btnPerformAction.Add_click( {
 
-        $navUserNames = (Get-Content -Path $txtUserFile.Text)
-        
+        $navUserNames = (Get-Content -Path $txtUserFile.Text)       
         
         $createfile = "UsersPasswords.txt"
     
@@ -195,15 +215,17 @@ $btnPerformAction.Add_click( {
             $PlainPassword = $password
             $SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
             $PermissionSet = $cbxPermissionSet.Text
+            $LicenseType = $cbxUsersTypes.Text
             $contentfile = "User Name: $navUserName" + $OFS + "Password: $password" + $OFS
+
             Add-Content $filepath "$contentfile" -NoNewline
 
             Get-NAVServerInstance | Format-Table -Property "State", "DisplayName" -AutoSize 
-            Write-Host "Input Dynamics NAV Service Instance Name" -ForegroundColor Green
+            
     
             $instance = $cbxNavInstance.SelectedValue
             
-            New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -ChangePasswordAtNextLogOn -Verbose -LicenseType Full
+            New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -ChangePasswordAtNextLogOn -Verbose -LicenseType $LicenseType
             New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId $PermissionSet -Verbose
 
         }
