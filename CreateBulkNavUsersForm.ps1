@@ -112,8 +112,8 @@ $FORM.Add_Loaded( {
             $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
 
         }
-        $navServicesList = Get-NAVServerInstance | Where-Object { ($_.State -eq "Running") }
     })
+$navServicesList = Get-NAVServerInstance | Where-Object { ($_.State -eq "Running") }
 foreach ($service in $navServicesList) {
     $cbxNavInstance.Items.Add($service.ServerInstance.Substring(27)) 
 }
