@@ -1,5 +1,8 @@
-﻿[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-[System.Windows.Forms.Application]::EnableVisualStyles()
+﻿[Net.ServicePointManager]::SecurityProtocol = 'Tls12'
+[void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName PresentationCore, PresentationFramework
 [xml]$XAML = @"
 <Window
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,14 +11,14 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
         Title="Create NavUsers From File" Height="255" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
-    <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Margin="0,0,0,0" Height="255" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300">
+        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Margin="0,0,0,0" Height="255" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300">
         <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="230" Margin="26,15,0,0" Text="Select CSV User List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
         <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="26,79,0,0" VerticalAlignment="Top"/>
         <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="117,80,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"/>
         <Label Name="lblPermSet" Content="Permission Set" HorizontalAlignment="Left" Margin="26,105,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxPermissionSets" HorizontalAlignment="Left" Margin="117,105,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"> </ComboBox>
+        <ComboBox Name="cbxPermissionSets" HorizontalAlignment="Left" Margin="117,105,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"/>
         <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="26,130,0,0" VerticalAlignment="Top"/>
-          <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="117,130,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0">
+        <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="117,130,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0">
             <ComboBoxItem Content="Full"/>
             <ComboBoxItem Content="Limited"/>
         </ComboBox>
@@ -102,7 +105,7 @@ else {
     }
     $intVersion = [int]::Parse($vdir)
 }
-$FORM.Add_Loaded( {       
+$Form.Add_Loaded( {       
 
         $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
         foreach ($Permission in $Permissions) {    
@@ -198,8 +201,6 @@ $btnPerformAction.Add_click( {
     
         $filepath = $txtPswdFile.Text + "\" + $createfile
         
-        
-
         foreach ($navUserName in $navUserNames) {
             
             function ScramblePassword([string]$inputString) {     
@@ -232,18 +233,15 @@ $btnPerformAction.Add_click( {
             $instance = $cbxNavInstance.SelectedValue
             New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType"  -ChangePasswordAtNextLogOn 
             New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermissionSet"
-            [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
             }
             catch{
                 [System.Windows.MessageBox]::Show("An Error Occured during creation" + $OFS + $_ , 'Error', 'OK', 'Error')
-            }
-            finally
-            {
-                explorer $txtPswdFile.Text
-                Exit
-                
+                break
             }
         }
+        [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
+        explorer $txtPswdFile.Text
+        Exit
     })
 
 $Form.ShowDialog() | out-null
