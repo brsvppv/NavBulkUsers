@@ -9,20 +9,17 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
      
         Title="Create NavUsers From File" Height="255" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
     <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Margin="0,0,0,0" Height="255" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300">
-        <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="230" Margin="26,15,0,0" TextWrapping="Wrap" Text="Select CSV User List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
+        <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="230" Margin="26,15,0,0" Text="Select CSV User List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
         <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="26,79,0,0" VerticalAlignment="Top"/>
         <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="117,80,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"/>
         <Label Name="lblPermSet" Content="Permission Set" HorizontalAlignment="Left" Margin="26,105,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxPermissionSets" HorizontalAlignment="Left" Margin="117,105,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0">
-            <ComboBoxItem Content="BASIC"/>
-            <ComboBoxItem Content="SUPER"/>
-        </ComboBox>
+        <ComboBox Name="cbxPermissionSets" HorizontalAlignment="Left" Margin="117,105,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"> </ComboBox>
         <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="26,130,0,0" VerticalAlignment="Top"/>
           <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="117,130,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0">
             <ComboBoxItem Content="Full"/>
             <ComboBoxItem Content="Limited"/>
         </ComboBox>
-        <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="26,51,0,0" TextWrapping="Wrap" Text="Dir To Export" VerticalAlignment="Top" Width="231" FontSize="11" IsReadOnly="true"/>
+        <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="26,51,0,0" Text="Dir To Export" VerticalAlignment="Top" Width="231" FontSize="11" IsReadOnly="true"/>
         <Button Name="btnUserSourceFile" Content="..." Margin="255,15,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="20"/>
         <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="255,51,0,0" VerticalAlignment="Top" Width="20" Height="20"/>
         <Button Name="btnPerformAction" Content="Perform Action" Margin="27,190,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="248"/>
@@ -94,13 +91,13 @@ if ($exist -eq $false) {
 }
 else {
     try {
-        Import-Module "$psmodpath" -ErrorAction Stop -Verbose
-        Import-Module "$global:globalpath" | Out-Null  -Verbose                
+        Import-Module "$psmodpath" -ErrorAction Stop
+        Import-Module "$global:globalpath" | Out-Null                
     }
     catch [System.Management.Automation.ItemNotFoundException] {     
         [System.Windows.MessageBox]::Show("An Error Occured During Import  $_", 'Version: $buildversion', 'OK', 'Infromation')        
-        Import-Module "$global:globalpath" | Out-Null  -Verbose
-        Import-Module "$globaldir\NavAdminTool.ps1" -ErrorAction Stop -Verbose
+        Import-Module "$global:globalpath" | Out-Null
+        Import-Module "$globaldir\NavAdminTool.ps1" -ErrorAction Stop
         [System.Windows.MessageBox]::Show("No Server Installation:  $_", 'Error No Install', 'OK', 'Error')
     }
     $intVersion = [int]::Parse($vdir)
@@ -129,20 +126,23 @@ Function PickUserFile {
     { $fullPath = $FileBrowser.FileNames }
     else {
         
-        [System.Windows.MessageBox]::Show( "Cancelled by user. `nYou need to select file.  `n $_", 'No FIle Selected', 'OK', 'Error')
+        $res = [System.Windows.Forms.MessageBox]::Show("No File Selected, Try Again ?", "Select a location", [System.Windows.Forms.MessageBoxButtons]::YesNo)
+            if ($res -eq "No") {
+                return
+        }
     }
     $filedirectory = Split-Path -Parent $FileBrowser.FileName
     $fname = [System.IO.Path]::GetFileName($fullPath)          
     $txtUserFile.Text = "$filedirectory" + "\" + "$fname"
-    $navUserNames = $txtUserFile.Text
-    return $FileBrowser.FileNames 
+    #$navUserNames = $txtUserFile.Text
+    return $FileBrowser.FileNames   
 }
 
-function FindFolders {
+function SelectDirectory {
  
     $browse = New-Object System.Windows.Forms.FolderBrowserDialog
     $browse.SelectedPath = "C:\"
-    $browse.ShowNewFolderButton = $false
+    $browse.ShowNewFolderButton = $true
     $browse.Description = "Select a directory"
 
     $loop = $true
@@ -150,21 +150,19 @@ function FindFolders {
         if ($browse.ShowDialog() -eq "OK") {
             $loop = $false
 		
-            #Insert your script here
+            $browse.SelectedPath
+            $txtPswdFile.Text = $browse.SelectedPath
+            $browse.Dispose()
 		
         }
         else {
-            $res = [System.Windows.Forms.MessageBox]::Show("You clicked Cancel. Would you like to try again or exit?", "Select a location", [System.Windows.Forms.MessageBoxButtons]::YesNo)
+            $res = [System.Windows.Forms.MessageBox]::Show("No Directroy Selected. Try Again?", "Select a location", [System.Windows.Forms.MessageBoxButtons]::YesNo)
             if ($res -eq "No") {
-                #Ends script
+                #####
                 return
             }
         }
     }
-    $browse.SelectedPath
-    $txtPswdFile.Text = $browse.SelectedPath
-    $browse.Dispose()
-    
 }
 
 $cbxNavInstance.Add_SelectionChanged( {
@@ -185,7 +183,7 @@ $btnUserSourceFile.Add_click( {
     })
 
 $btnSavePswdFile.Add_click( {
-        FindFolders
+        SelectDirectory
         #$filepath = $txtPswdFile.Text
     })
 
@@ -200,7 +198,7 @@ $btnPerformAction.Add_click( {
     
         $filepath = $txtPswdFile.Text + "\" + $createfile
         
-        New-Item $filepath -type File
+        
 
         foreach ($navUserName in $navUserNames) {
             
@@ -217,20 +215,34 @@ $btnPerformAction.Add_click( {
            
             $PlainPassword = $password
             $SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
-            $PermissionSet = $cbxPermissionSet.Text
-            $LicenseType = $cbxUsersTypes.Text
+
+            $PermissionSet = $cbxPermissionSets.Text
+            $LicenseType = $cbxUsersLicenseTypes.Text
+            try{
+            $exist = [System.IO.Directory]::Exists($filepath)
+            if ($exist -eq $false)
+            {
+                Write-Host "File does not exist" -ForegroundColor  Magenta
+                New-Item $filepath -Type File
+
+                }
             $contentfile = "User Name: $navUserName" + $OFS + "Password: $password" + $OFS
-
-            Add-Content $filepath "$contentfile" -NoNewline
-
-            Get-NAVServerInstance | Format-Table -Property "State", "DisplayName" -AutoSize 
-            
-    
+            Add-Content $filepath "$contentfile" -NoNewline 
+   
             $instance = $cbxNavInstance.SelectedValue
-            
-            New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -ChangePasswordAtNextLogOn -Verbose -LicenseType $LicenseType
-            New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId $PermissionSet -Verbose
-
+            New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType"  -ChangePasswordAtNextLogOn 
+            New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermissionSet"
+            [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
+            }
+            catch{
+                [System.Windows.MessageBox]::Show("An Error Occured during creation" + $OFS + $_ , 'Error', 'OK', 'Error')
+            }
+            finally
+            {
+                explorer $txtPswdFile.Text
+                Exit
+                
+            }
         }
     })
 
