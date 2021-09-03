@@ -1,4 +1,6 @@
-﻿[xml]$XAML = @"
+﻿[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+[System.Windows.Forms.Application]::EnableVisualStyles()
+[xml]$XAML = @"
 <Window
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -35,6 +37,7 @@ catch { Write-Host "Unable to load Windows.Markup.XamlReader"; exit }
 # Store Form Objects In PowerShell
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $Form.FindName($_.Name) }
 $fullPath
+
 function RandomCharacters($length, $characters) {
     $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
     $private:ofs = ""
@@ -44,7 +47,6 @@ function RandomCharacters($length, $characters) {
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 $RootDir = "C:\Program Files\"
 $navdir = "Microsoft Dynamics NAV"
-$bcdir = "Microsoft Dynamics 365 Business Central"
 $global:globalpath = $null
 $globaldir = Join-Path $RootDir -ChildPath $navdir 
 $fileversion = "Microsoft.Dynamics.Nav.Service.dll"
@@ -59,22 +61,22 @@ if ($exist -eq $true) {
 }
             
 if ($exist -eq $false ) {
-            
+    $bcdir = "Microsoft Dynamics 365 Business Central"       
     $globaldir = Join-Path $RootDir -ChildPath $bcdir 
-            
     $vdir = Get-ChildItem $globaldir -ErrorAction Stop
-            
     $globaldir = Join-Path "$globaldir" -ChildPath $vdir.Name  | Join-Path -ChildPath "Service"
             
 }          
 $file = Join-Path $globaldir -ChildPath $fileversion  
-     
-$buildversion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($file).FileVersion  
-      
+try {  
+    $buildversion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($file).FileVersion  
+}
+catch {
+   
+}
 $boolBuildExist = [string]::IsNullOrEmpty($buildversion) 
 if ($boolBuildExist -eq $false) {
     $Packages = Get-Package | Where-Object { $_.version -eq $buildversion } | Format-Table -AutoSize
-    
     [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected." + $OFS + "Version: $buildversion", 'Error No Install', 'OK', 'information')
     
 }
@@ -103,14 +105,15 @@ else {
     }
     $intVersion = [int]::Parse($vdir)
 }
-$FORM.Add_Loaded({       
+$FORM.Add_Loaded( {       
 
-$Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
-foreach ($Permission in $Permissions) {    
-     $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
-    }
-})
-$navServicesList = Get-NAVServerInstance | Where-Object { ($_.State -eq "Running") }
+        $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
+        foreach ($Permission in $Permissions) {    
+            $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
+
+        }
+        $navServicesList = Get-NAVServerInstance | Where-Object { ($_.State -eq "Running") }
+    })
 foreach ($service in $navServicesList) {
     $cbxNavInstance.Items.Add($service.ServerInstance.Substring(27)) 
 }
@@ -133,11 +136,10 @@ Function PickUserFile {
     $txtUserFile.Text = "$filedirectory" + "\" + "$fname"
     $navUserNames = $txtUserFile.Text
     return $FileBrowser.FileNames 
-  
 }
+
 function FindFolders {
-    [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-    [System.Windows.Forms.Application]::EnableVisualStyles()
+ 
     $browse = New-Object System.Windows.Forms.FolderBrowserDialog
     $browse.SelectedPath = "C:\"
     $browse.ShowNewFolderButton = $false
@@ -166,15 +168,16 @@ function FindFolders {
 }
 
 $cbxNavInstance.Add_SelectionChanged( {
-$cbxPermissionSets.Items.Clear()
-$Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
-foreach ($Permission in $Permissions) {    
-     $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
-    }
-})
-$cbxPermissionSet.Add_GotFocus( {
+        $cbxPermissionSets.Items.Clear()
+        $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
+        foreach ($Permission in $Permissions) {    
+            $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
+        }
+    })
+
+$cbxNavInstance.Add_GotFocus( {
   
-})
+    })
 
 $btnUserSourceFile.Add_click( {
         PickUserFile    
@@ -187,7 +190,7 @@ $btnSavePswdFile.Add_click( {
     })
 
 #$ConfirmResult = -1
-$OFS = "`r`n"
+
 
 $btnPerformAction.Add_click( {
 
