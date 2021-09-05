@@ -25,7 +25,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="26,51,0,0" Text="Dir To Export" VerticalAlignment="Top" Width="231" FontSize="11" IsReadOnly="true"/>
         <Button Name="btnUserSourceFile" Content="..." Margin="255,15,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="20"/>
         <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="255,51,0,0" VerticalAlignment="Top" Width="20" Height="20"/>
-        <Button Name="btnPerformAction" Content="Perform Action" Margin="27,190,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="248"/>
+        <Button Name="btnPerformAction" Content="Perform Action" Margin="27,180,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="248"/>
     </Grid>
 </Window>
 "@
