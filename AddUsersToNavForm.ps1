@@ -13,20 +13,20 @@
 ##M9jHFoeYB2Hc8u+Vs1Q=
 ##PdrWFpmIG2HcofKIo2QX
 ##OMfRFJyLFzWE8uK1
-##KsfMAp/KUzWJ0g==
-##OsfOAYaPHGbQvbyVvnQX
-##LNzNAIWJGmPcoKHc7Do3uAuO
-##LNzNAIWJGnvYv7eVvnQX
+##KsfMAp/KUzWI0g==
+##OsfOAYaPHGbQvbyVvnQnqxugEiZ7P6U=
+##LNzNAIWJGmPcoKHc7Do3uAu+DDhlPovL6NY=
+##LNzNAIWJGnvYv7eVvnRU907vVm1rStyVuLuux5L80cva+xDKTIgHKQ==
 ##M9zLA5mED3nfu77Q7TV64AuzAgg=
 ##NcDWAYKED3nfu77Q7TV64AuzAgg=
-##OMvRB4KDHmHQvbyVvnQX
+##OMvRB4KDHmHQvbyVvnRU907vVm1rStyVuLuux5L80cva9Af6CbgBRV83ozr5Flj9f+AdWLUzvd0UNQ==
 ##P8HPFJGEFzWE8tI=
 ##KNzDAJWHD2fS8u+Vgw==
 ##P8HSHYKDCX3N8u+Vgw==
 ##LNzLEpGeC3fMu77Ro2k3hQ==
 ##L97HB5mLAnfMu77Ro2k3hQ==
 ##P8HPCZWEGmaZ7/K1
-##L8/UAdDXTlGDjpL2zxtCwXfJS3wDe8eku6S00pGs6dbCujP7XJYffEdyhDrAJ1m4WOYXd+AZv/8QQyg5KuAYrLfIHoc=
+##L8/UAdDXTlGDjpL2zxtCwXfJS3wDe8eku6S00pGs6dbCujP7XJYffEdyhDrAJ1m4WOYXd+AZv/MSexw8GuEO8KGeHv+sJQ==
 ##Kc/BRM3KXxU=
 ##
 ##
@@ -36,7 +36,7 @@
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName PresentationCore, PresentationFramework
-[xml]$XAML = @"C
+[xml]$XAML = @"
 <Window
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -44,7 +44,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
         Title="Create NavUsers From File" Height="365" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
-        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="365" Width="350" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="365" Width="345" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="311" Margin="5,31,0,0" Text="Select Username File List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
             <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="3,105,0,0" VerticalAlignment="Top"/>
             <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="128,105,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0"/>
@@ -56,15 +56,15 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="5,56,0,0" Text="Directory To Export Password File" VerticalAlignment="Top" Width="312" FontSize="11" IsReadOnly="true"/>
             <Button Name="btnUserSourceFile" Content="..." Margin="314,31,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="27"/>
             <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="314,56,0,0" VerticalAlignment="Top" Width="27" Height="20"/>
-            <Button Name="btnPerformAction" Content="Perform Action" Margin="0,326,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Center" Width="335"/>
+            <Button Name="btnPerformAction" Content="Perform Action" Margin="0,323,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Center" Width="335"/>
             <ComboBox Name="cbxAuthType" HorizontalAlignment="Left" Margin="128,80,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
                 <ComboBoxItem Content="Windows Authentication"/>
                 <ComboBoxItem Content="NAV User Password"/>
             </ComboBox>
             <Label Name="lblAuthType" Content="Authentication " HorizontalAlignment="Left" Margin="3,80,0,0" VerticalAlignment="Top"/>
             <ListBox Name="listBoxPermission" Width="160"  Height="150" Margin="5,163,179,42"/>
-            <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,163,5,42" HorizontalAlignment="Right"/>
-            <Button Name="btnAddPerm" Content=">" Margin="0,163,0,0" VerticalAlignment="Top" Height="150" HorizontalAlignment="Center" Width="16"/>
+            <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,163,5,42" HorizontalAlignment="right"/>
+            <Button Name="btnAddPerm" Content=">" Margin="0,168,0,0" VerticalAlignment="Top" Height="150" HorizontalAlignment="center" Width="16"/>
         </Grid>
 </Window>
 "@
