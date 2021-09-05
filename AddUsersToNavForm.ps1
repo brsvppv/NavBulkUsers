@@ -10,31 +10,29 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
-        Title="Create NavUsers From File" Height="445" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
-        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="421" VerticalAlignment="Center" HorizontalAlignment="Center" Width="344">
-        <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="311" Margin="5,31,0,0" Text="Select CSV User List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
-        <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="3,105,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="128,105,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0"/>
-        <Label Name="lblPermSet" Content="Permission Set" HorizontalAlignment="Left" Margin="3,324,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxPermissionSets" HorizontalAlignment="Left" Margin="94,326,0,0" VerticalAlignment="Top" Width="158" SelectedIndex="0"/>
-        <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="3,130,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="128,130,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
-            <ComboBoxItem Content="Full"/>
-            <ComboBoxItem Content="Limited"/>
-        </ComboBox>
-        <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="5,56,0,0" Text="Dir To Export" VerticalAlignment="Top" Width="312" FontSize="11" IsReadOnly="true"/>
-        <Button Name="btnUserSourceFile" Content="..." Margin="314,31,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="27"/>
-        <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="314,56,0,0" VerticalAlignment="Top" Width="27" Height="20"/>
-        <Button Name="btnPerformAction" Content="Perform Action" Margin="0,391,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Center" Width="346"/>
-        <ComboBox Name="cbxAuthType" HorizontalAlignment="Left" Margin="128,80,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
-            <ComboBoxItem Content="NAV User Password Auth"/>
-            <ComboBoxItem Content="Windows Authentication"/>
-        </ComboBox>
-        <Label Name="lblAuthType" Content="Authentication " HorizontalAlignment="Left" Margin="3,80,0,0" VerticalAlignment="Top"/>
-        <ListBox Name="lbPermList" Width="160"  Height="150" Margin="5,163,179,108"/>
-        <ListBox Name="lbPermSelected" Width="160"  Height="150" Margin="0,163,5,108" HorizontalAlignment="Right"/>
-        <Button Name="btnAddPerm" Content=">" Margin="0,163,0,0" VerticalAlignment="Top" Height="150" HorizontalAlignment="Center" Width="16"/>
-    </Grid>
+        Title="Create NavUsers From File" Height="369" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="355" VerticalAlignment="Center" HorizontalAlignment="Center" Width="344">
+            <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="311" Margin="5,31,0,0" Text="Select Username File List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
+            <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="3,105,0,0" VerticalAlignment="Top"/>
+            <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="128,105,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0"/>
+            <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="3,130,0,0" VerticalAlignment="Top"/>
+            <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="128,130,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
+                <ComboBoxItem Content="Full"/>
+                <ComboBoxItem Content="Limited"/>
+            </ComboBox>
+            <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="5,56,0,0" Text="Directory To Export Password File" VerticalAlignment="Top" Width="312" FontSize="11" IsReadOnly="true"/>
+            <Button Name="btnUserSourceFile" Content="..." Margin="314,31,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="27"/>
+            <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="314,56,0,0" VerticalAlignment="Top" Width="27" Height="20"/>
+            <Button Name="btnPerformAction" Content="Perform Action" Margin="0,326,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Center" Width="335"/>
+            <ComboBox Name="cbxAuthType" HorizontalAlignment="Left" Margin="128,80,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
+                <ComboBoxItem Content="Windows Authentication"/>
+                <ComboBoxItem Content="NAV User Password"/>
+            </ComboBox>
+            <Label Name="lblAuthType" Content="Authentication " HorizontalAlignment="Left" Margin="3,80,0,0" VerticalAlignment="Top"/>
+            <ListBox Name="listBoxPermission" Width="160"  Height="150" Margin="5,163,179,42"/>
+            <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,163,5,42" HorizontalAlignment="Right"/>
+            <Button Name="btnAddPerm" Content=">" Margin="0,163,0,0" VerticalAlignment="Top" Height="150" HorizontalAlignment="Center" Width="16"/>
+        </Grid>
 </Window>
 "@
 
@@ -45,6 +43,7 @@ catch { Write-Host "Unable to load Windows.Markup.XamlReader"; exit }
 # Store Form Objects In PowerShell
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $Form.FindName($_.Name) }
 $fullPath
+
 
 function RandomCharacters($length, $characters) {
     $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
@@ -115,10 +114,9 @@ else {
 }
 $Form.Add_Loaded( {       
         
-        $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
+        $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.SelectedItem
         foreach ($Permission in $Permissions) {    
-            $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
-            $lbPermList.Items.Add($Permission.PermissionSetID)
+            $listBoxPermission.Items.Add($Permission.PermissionSetID)
         }
         $txtPswdFile.Visibility = 'Hidden'
         $btnSavePswdFile.Visibility = 'Hidden'
@@ -179,53 +177,37 @@ function SelectDirectory {
     }
 }
 
-
 $cbxNavInstance.Add_SelectionChanged( {
-        $cbxPermissionSets.Items.Clear()
-        $lbPermList.Items.Clear()
-        $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
+        $listBoxPermission.Items.Clear()
+        $listBoxPermissionSelected.Items.Clear()
+        $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.SelectedItem
         foreach ($Permission in $Permissions) {    
-            $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
-            $lbPermList.Items.Add($Permission.PermissionSetID)
+            $listBoxPermission.Items.Add($Permission.PermissionSetID)
+
         }
     })
 
-$cbxNavInstance.Add_GotFocus( {
-  
-    })
-
-$btnUserSourceFile.Add_click( {
-        PickUserFile    
-        #$navUserNames = $txtUserFile.Text
-    })
-
-$btnSavePswdFile.Add_click( {
-        SelectDirectory
-        #$filepath = $txtPswdFile.Text
-    })
 function EnableButton {
- if($cbxAuthType.SelectedIndex -eq 0 -And $txtUserFile.Text -eq "Select Username File List"){
-        $btnPerformAction.IsEnabled = $true
-    }
-elseif ($cbxAuthType.SelectedIndex -eq 1 -And $txtUserFile.Text -eq "Select Username File List"){
+    if ($cbxAuthType.SelectedIndex -eq 0 -And $txtUserFile.Text -eq "Select Username File List") {
         $btnPerformAction.IsEnabled = $false
     }
-elseif($cbxAuthType.SelectedIndex -eq 0 -and $txtUserFile.Text -ne "Select Username File List"){4
+    elseif ($cbxAuthType.SelectedIndex -eq 1 -And $txtUserFile.Text -eq "Select Username File List") {
+        $btnPerformAction.IsEnabled = $false
+    }
+    elseif ($cbxAuthType.SelectedIndex -eq 0 -and $txtUserFile.Text -ne "Select Username File List") {
         $btnPerformAction.IsEnabled = $true
     }
-elseif($cbxAuthType.SelectedIndex -eq 1 -and $txtPswdFile.Text -ne "Directory To Export Password File" )
-    {
+    elseif ($cbxAuthType.SelectedIndex -eq 1 -and $txtPswdFile.Text -ne "Directory To Export Password File") {
         $btnPerformAction.IsEnabled = $true
     }
 }
+$txtUserFile.Add_TextChanged( {
+        EnableButton
+    })
 
-$txtUserFile.Add_TextChanged({
-    EnableButton
-})
-
-$txtPswdFile.Add_TextChanged({
-  EnableButton
-})
+$txtPswdFile.Add_TextChanged( {
+        EnableButton
+    })
 $cbxAuthType.Add_SelectionChanged( {
 
         if ($cbxAuthType.SelectedIndex -eq 0 ) {
@@ -240,14 +222,28 @@ $cbxAuthType.Add_SelectionChanged( {
             #$btnPerformAction.IsEnabled = $false
             $txtPswdFile.Visibility = 'Visible'
             $btnSavePswdFile.Visibility = 'Visible'
-            if ($txtUserFile.Text -eq "Select Username File List" -and $txtPswdFile.Text -eq "Directory To Export Password File"){
-                    $btnPerformAction.IsEnabled = $false
-                }
-                else{
-                        $btnPerformAction.IsEnabled = $false
-                }
-                EnableButton
+            if ($txtUserFile.Text -eq "Select Username File List" -and $txtPswdFile.Text -eq "Directory To Export Password File") {
+                $btnPerformAction.IsEnabled = $false
+            }
+            else {
+                $btnPerformAction.IsEnabled = $false
+            }
+            EnableButton
         }
+    })
+$btnUserSourceFile.Add_click( {
+        PickUserFile    
+        #$navUserNames = $txtUserFile.Text
+    })
+$btnSavePswdFile.Add_click( {
+        SelectDirectory
+        #$filepath = $txtPswdFile.Text
+    })
+$btnAddPerm.Add_Click( {
+        $PermSelected = $listBoxPermission.SelectedItem
+        $listBoxPermission.Items.Remove($PermSelected)
+        $listBoxPermissionSelected.Items.Add($PermSelected)
+    
     })
 $btnPerformAction.Add_click( {
 
@@ -272,8 +268,6 @@ $btnPerformAction.Add_click( {
            
             $PlainPassword = $password
             $SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
-
-            $PermissionSet = $cbxPermissionSets.Text
             $LicenseType = $cbxUsersLicenseTypes.Text
             $instance = $cbxNavInstance.SelectedValue
         }
@@ -284,8 +278,9 @@ $btnPerformAction.Add_click( {
                 $logonName = $navUserName + "@" + $env:USERDNSDOMAIN 
 
                 New-NAVServerUser -WindowsAccount $logonName -ServerInstance $instance -LicenseType "$LicenseType"
-                New-NavServerUserPermissionSet -WindowsAccount $logonName -ServerInstance $instance -PermissionSetId "$PermissionSet"
-
+                foreach ($PermSet in $listBoxPermissionSelected.Items) {
+                    New-NavServerUserPermissionSet -WindowsAccount $logonName -ServerInstance $instance -PermissionSetId "$PermSet"
+                }
             }
             
             if ($cbxAuthType.SelectedIndex -eq 1) {
@@ -299,7 +294,10 @@ $btnPerformAction.Add_click( {
                 Add-Content $filepath "$contentfile" -NoNewline 
 
                 New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType"  -ChangePasswordAtNextLogOn 
-                New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermissionSet"
+                foreach ($PermSet in $listBoxPermissionSelected.Items) {
+                    New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermSet"
+                }
+                start-Sleep -Seconds 3
                 explorer $txtPswdFile.Text
             }
 
