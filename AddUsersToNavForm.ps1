@@ -65,7 +65,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             <ListBox Name="listBoxPermission" Width="160"  Height="150" Margin="5,163,179,42"/>
             <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,163,5,42" HorizontalAlignment="right"/>
             <Button Name="btnAddPerm" Content=">" Margin="0,167,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>
-            <Button Name="btnRemoveSelcted" Content="&gt;" Margin="0,242,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>      
+            <Button Name="btnRemoveSelcted" Content="&gt;" Margin="0,243,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>      
         </Grid>
 </Window>
 "@
@@ -118,7 +118,7 @@ catch {
 $boolBuildExist = [string]::IsNullOrEmpty($buildversion) 
 if ($boolBuildExist -eq $false) {
     $Packages = Get-Package | Where-Object { $_.version -eq $buildversion } | Format-Table -AutoSize
-    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected." + $OFS + "Version: $buildversion", 'Error No Install', 'OK', 'information')
+    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected. Build Version: $buildversion", 'Error No Install', 'OK', 'information')
     
 }
 else {
