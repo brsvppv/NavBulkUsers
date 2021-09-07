@@ -43,8 +43,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
-        Title="Create NavUsers From File" Height="365" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
-        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="365" VerticalAlignment="Center" HorizontalAlignment="Center" Width="344">
+        Title="Create NavUsers From File" Height="370" Width="355" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+        <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="365" VerticalAlignment="Center" HorizontalAlignment="Center" Width="345">
             <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="311" Margin="5,31,0,0" Text="Select Username File List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
             <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="3,105,0,0" VerticalAlignment="Top"/>
             <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="128,105,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0"/>
@@ -64,8 +64,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             <Label Name="lblAuthType" Content="Authentication " HorizontalAlignment="Left" Margin="3,80,0,0" VerticalAlignment="Top"/>
             <ListBox Name="listBoxPermission" Width="160"  Height="150" Margin="5,163,179,42"/>
             <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,163,5,42" HorizontalAlignment="right"/>
-            <Button Name="btnAddPerm" Content=">" Margin="0,167,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>
-            <Button Name="btnRemoveSelcted" Content="&gt;" Margin="0,243,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>      
+            <Button Name="btnAddPerm" Content=">" Margin="0,168,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>
+            <Button Name="btnRemoveSelcted" Content="&lt;" Margin="0,243,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>      
         </Grid>
 </Window>
 "@
