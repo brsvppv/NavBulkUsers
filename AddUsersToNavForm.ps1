@@ -69,7 +69,6 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         </Grid>
 </Window>
 "@
-
 #Read XAML
 $reader = (New-Object System.Xml.XmlNodeReader $xaml) 
 try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
