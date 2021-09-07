@@ -26,7 +26,7 @@
 ##LNzLEpGeC3fMu77Ro2k3hQ==
 ##L97HB5mLAnfMu77Ro2k3hQ==
 ##P8HPCZWEGmaZ7/K1
-##L8/UAdDXTlGDjpL2zxtCwXfJS3wDe8eku6S00pGs6dbCujP7XJYffEdyhDrAJU+5e+ceXtcWmtAHYA4vPeFF56rVew==
+##L8/UAdDXTlGDjpLm+idj4EbKS3oubdGUq7+i172Y+vnnryrJdbsQTXp2gBzvAVmuF/cKUJU=
 ##Kc/BRM3KXxU=
 ##
 ##
@@ -85,9 +85,10 @@ function RandomCharacters($length, $characters) {
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+Function ImportNavModule{
 $RootDir = "C:\Program Files\"
 $navdir = "Microsoft Dynamics NAV"
-$global:globalpath = $null
+#$global:globalpath = $null
 $globaldir = Join-Path $RootDir -ChildPath $navdir 
 $fileversion = "Microsoft.Dynamics.Nav.Service.dll"
 $buildversion = $null
@@ -103,7 +104,7 @@ if ($exist -eq $true) {
 if ($exist -eq $false ) {
     $bcdir = "Microsoft Dynamics 365 Business Central"       
     $globaldir = Join-Path $RootDir -ChildPath $bcdir 
-    $vdir = Get-ChildItem $globaldir -ErrorAction Stop
+    $vdir = Get-ChildItem $globaldir -ErrorAction Stop | Out-Null
     $globaldir = Join-Path "$globaldir" -ChildPath $vdir.Name  | Join-Path -ChildPath "Service"
             
 }          
@@ -117,7 +118,7 @@ catch {
 $boolBuildExist = [string]::IsNullOrEmpty($buildversion) 
 if ($boolBuildExist -eq $false) {
     $Packages = Get-Package | Where-Object { $_.version -eq $buildversion } | Format-Table -AutoSize
-    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected. Build Version: $buildversion", 'Error No Install', 'OK', 'information')
+    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected. Build Version: $buildversion", 'Info', 'OK', 'information')
     
 }
 else {
@@ -126,7 +127,7 @@ else {
 }
     
 $psmodpath = "$globaldir\NavAdminTool.ps1"
-$global:globalpath = $psmodpath
+#$global:globalpath = $psmodpath
 $exist = [System.IO.file]::Exists($psmodpath)
             
 if ($exist -eq $false) {
@@ -134,16 +135,21 @@ if ($exist -eq $false) {
 }
 else {
     try {
-        Import-Module "$psmodpath" -ErrorAction Stop
-        Import-Module "$global:globalpath" | Out-Null                
+        Import-Module "$psmodpath" -ErrorAction Stop | Out-Null
+        #Import-Module "$global:globalpath" | Out-Null                
     }
     catch [System.Management.Automation.ItemNotFoundException] {     
         [System.Windows.MessageBox]::Show("An Error Occured During Import  $_", 'Version: $buildversion', 'OK', 'Infromation')        
-        Import-Module "$global:globalpath" | Out-Null
+        #Import-Module "$global:globalpath" | Out-Null
+        Import-Module "$psmodpath" -ErrorAction Stop | Out-Null
         Import-Module "$globaldir\NavAdminTool.ps1" -ErrorAction Stop
         [System.Windows.MessageBox]::Show("No Server Installation:  $_", 'Error No Install', 'OK', 'Error')
     }
 }
+}
+
+
+
 $Form.Add_Loaded( {       
         
         $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.SelectedItem
