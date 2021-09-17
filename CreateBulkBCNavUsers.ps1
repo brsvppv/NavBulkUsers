@@ -174,8 +174,6 @@ function SelectDirectory {
         }
     }
 }
-
-
 $cbxNavInstance.Add_SelectionChanged( {
         $cbxPermissionSets.Items.Clear()
         $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.Text
@@ -183,7 +181,6 @@ $cbxNavInstance.Add_SelectionChanged( {
             $cbxPermissionSets.Items.Add($Permission.PermissionSetID)
         }
     })
-
 $cbxNavInstance.Add_GotFocus( {
   
     })
