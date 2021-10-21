@@ -1,4 +1,37 @@
-﻿[Net.ServicePointManager]::SecurityProtocol = 'Tls12'
+﻿##[Ps1 To Exe]
+##
+##Kd3HDZOFADWE8uO1
+##Nc3NCtDXTlGDjqzx7Bp48WbhVG01UuyYtri0+K+56MPPiBneQZUHXRp+lSac
+##Kd3HFJGZHWLWoLaVvnQnhQ==
+##LM/RF4eFHHGZ7/K1
+##K8rLFtDXTiW5
+##OsHQCZGeTiiZ4dI=
+##OcrLFtDXTiW5
+##LM/BD5WYTiiZ4tI=
+##McvWDJ+OTiiZ4tI=
+##OMvOC56PFnzN8u+Vs1Q=
+##M9jHFoeYB2Hc8u+Vs1Q=
+##PdrWFpmIG2HcofKIo2QX
+##OMfRFJyLFzWE8uK1
+##KsfMAp/KUzWI0g==
+##OsfOAYaPHGbQvbyVvnQnqxugEiZ7PKU=
+##LNzNAIWJGmPcoKHc7Do3uAu+DDhlPovL69Y=
+##LNzNAIWJGnvYv7eVvnRU907vVm1rStyVuLuux5L80cva+xDKTIgHKQ==
+##M9zLA5mED3nfu77Q7TV64AuzAgg=
+##NcDWAYKED3nfu77Q7TV64AuzAgg=
+##OMvRB4KDHmHQvbyVvnRU907vVm1rStyVuLuux5L80cva9Af6CbgBRV83ozr5Flj9f+AdWLUzvd0UNQ==
+##P8HPFJGEFzWE8tI=
+##KNzDAJWHD2fS8u+Vgw==
+##P8HSHYKDCX3N8u+Vgw==
+##LNzLEpGeC3fMu77Ro2k3hQ==
+##L97HB5mLAnfMu77Ro2k3hQ==
+##P8HPCZWEGmaZ7/K1
+##L8/UAdDXTlGDjpLm+idj4EbKS3oubdGUq7+i172Y+vnnryrJdbsQTXp2gBzvAVmuF/cKUJU=
+##Kc/BRM3KXxU=
+##
+##
+##fd6a9f26a06ea3bc99616d4851b372ba
+[Net.ServicePointManager]::SecurityProtocol = 'Tls12'
 [void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 Add-Type -AssemblyName System.Windows.Forms
@@ -43,67 +76,106 @@ catch { Write-Host "Unable to load Windows.Markup.XamlReader"; exit }
 # Store Form Objects In PowerShell
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $Form.FindName($_.Name) }
 $fullPath
-
-
+$OFS = "`r`n"
 function RandomCharacters($length, $characters) {
     $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
     $private:ofs = ""
     return [String]$characters[$random]
 }
-
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-$RootDir = "C:\Program Files\"
-$navdir = "Microsoft Dynamics NAV"
-$globaldir = Join-Path $RootDir -ChildPath $navdir 
-$fileversion = "Microsoft.Dynamics.Nav.Service.dll"
-$buildversion = $null
-$exist = [System.IO.Directory]::Exists($globaldir)
-$OFS = "`r`n"
-if ($exist -eq $true) {
+Function AutoNavModuleImport {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $RootDir = "C:\Program Files\"
+    $navdir = "Microsoft Dynamics NAV"
+    #$global:globalpath = $null
+    $globaldir = Join-Path $RootDir -ChildPath $navdir 
+    $fileversion = "Microsoft.Dynamics.Nav.Service.dll"
+    $buildversion = $null
+    $gdirexist = [System.IO.Directory]::Exists($globaldir)
+    $WriteLine = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-    $vdir = Get-Childitem $globaldir -ErrorAction Stop   
-    $globaldir = Join-Path $globaldir -ChildPath  $vdir.Name | Join-Path -ChildPath "Service"
+    #if($variable -isnot [system.array]){do some code expecting the $variable is not an array}
+    #if($variable -is [system.array]){do some other stuff with $variable[0] being an array}
+    if ($gdirexist -eq $true) {
+        $vdir = Get-Childitem $globaldir -ErrorAction Stop  
+        
+        if ($vdir -is [system.array]) {
 
-}         
-if ($exist -eq $false ) {
-    $bcdir = "Microsoft Dynamics 365 Business Central"       
-    $globaldir = Join-Path $RootDir -ChildPath $bcdir 
-    $vdir = Get-ChildItem $globaldir -ErrorAction Stop
-    $globaldir = Join-Path "$globaldir" -ChildPath $vdir.Name  | Join-Path -ChildPath "Service"
+            $version = $vdir.Count 
+            ForEach-Object {
+                write-warning "Total of $version has been found installed"
+                Write-Host $WriteLine
+                for ($index = 0; $index -lt $version; $index++) {
+                    #$globaldir = Join-Path $globaldir -ChildPath  $vdir[$index].Name  | Join-Path -ChildPath "Service"
+                    $file = Join-Path $globaldir -ChildPath  $vdir[$index].Name  | Join-Path -ChildPath "Service" | Join-Path -ChildPath $fileversion 
+                    $boolVersionFile = [System.IO.file]::Exists($file)
+                    if ($boolVersionFile -eq $false) {
+                        Write-Host "Unknown Version Directory:" $vdir[$index].Name -ForegroundColor Yellow; Write-Warning  "Module cannot be found"
+                        Write-Host $WriteLine
+                    }
+                    else { 
+                        $buildversion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($file).FileVersion
+                        Write-Host "Available Module in Directory:" -NoNewline; write-host $vdir[$index].Name -ForegroundColor Yellow -NoNewline; write-host " Version:" -NoNewline; write-host $buildversion -ForegroundColor Cyan
+                        Write-Host $WriteLine
+                    }
+                    
+                } }
+            $vdir = Read-Host "Please Input Available Module in Directory:"
+        }
+        
+        $globaldir = Join-Path $globaldir -ChildPath  $vdir | Join-Path -ChildPath "Service"
+    }
+    if ($gdirexist -eq $false ) {
 
-}          
-$file = Join-Path $globaldir -ChildPath $fileversion  
-try {  
-    $buildversion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($file).FileVersion  
-}
-catch {
-    break
-}
-$boolBuildExist = [string]::IsNullOrEmpty($buildversion) 
+        $bcdir = "Microsoft Dynamics 365 Business Central"
+    
+        $globaldir = Join-Path $RootDir -ChildPath $bcdir 
+        
+        $vdir = Get-ChildItem $globaldir -ErrorAction Stop
+        
+        $globaldir = Join-Path "$globaldir" -ChildPath $vdir.Name  | Join-Path -ChildPath "Service"   
+    }          
 
-if ($boolBuildExist -eq $false) {
-    [System.Windows.MessageBox]::Show("Dynamics NAV/BC Detected. Build Version: $buildversion", 'Info', 'OK', 'information') 
-}
-else {
-    [System.Windows.MessageBox]::Show("No Dynamcis NAV/BC Version Detected", 'Error', 'OK', 'Error')
-    break
-}   
-$psmodpath = "$globaldir\NavAdminTool.ps1"
-$psmexist = [System.IO.file]::Exists($psmodpath)
+    $file = Join-Path $globaldir -ChildPath $fileversion   
+    $buildversion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($file).FileVersion
+    $boolBuildExist = [string]::IsNullOrEmpty($buildversion) 
 
-if ($psmexist -eq $false) {
-    [System.Windows.MessageBox]::Show("MODULE NOT DETECTED $_", 'FILE NOT FOUND', 'OK', 'Error')
+    if ($boolBuildExist -eq $false) { 
+        $psmodpath = "$globaldir\NavAdminTool.ps1"
+        $psmexist = [System.IO.file]::Exists($psmodpath)   
+    }
+    else {
+        write-host "NO VERSION DETECTED" -BackgroundColor Black -ForegroundColor Red
+        Write-Host "No Dynamics NAV Packages"
+        BREAK
+    }
+    # Check if the modile exist  after path change.
+    if ($psmexist -eq $true) {
+        try {
+            Import-Module "$psmodpath" -ErrorAction Stop -Verbose 
+
+        }
+        catch [System.Management.Automation.ItemNotFoundException] {     
+            Write-Host " Error Found $_" -ForegroundColor Green
+            Write-Host "Retry: $psmodpath"
+    
+            Import-Module "$psmodpath" -ErrorAction Stop -Verbose
+            [System.Windows.MessageBox]::Show("No Server Installation:  $_", 'Error No Install', 'OK', 'Error')
+        }
+        $intVersion = [int]::Parse($vdir)
+        Clear-Host
+        Write-Host "Loading Packages Locations" -ForegroundColor Yellow
+        Get-Package | Where-Object { $_.version -eq $buildversion } | Format-Table -AutoSize 
+        Write-Host "Version: $buildversion" -ForegroundColor Green
+
+    }
+    else {
+        Write-Host "Microsft Dynamcis DLL File was not found in $intVersion" -ForegroundColor  Magenta
+    }
 }
-else {
-            try {
-                Import-Module "$psmodpath" -ErrorAction Stop | Out-Null               
-            }
-            catch [System.Management.Automation.ItemNotFoundException] {     
-                [System.Windows.MessageBox]::Show("An Error Occured During Import  $_", 'Version: $buildversion', 'OK', 'Infromation')
-                Import-Module "$psmodpath" -ErrorAction Stop -Verbose
-                [System.Windows.MessageBox]::Show("No Server Installation:  $_", 'Error No Install', 'OK', 'Error')
-            }
-}
+
+AutoNavModuleImport
+
 $Form.Add_Loaded( {       
         
         $Permissions = Get-NAVServerPermissionSet -ServerInstance $cbxNavInstance.SelectedItem
@@ -200,6 +272,7 @@ $txtUserFile.Add_TextChanged( {
 $txtPswdFile.Add_TextChanged( {
         EnableButton
     })
+
 $cbxAuthType.Add_SelectionChanged( {
 
         if ($cbxAuthType.SelectedIndex -eq 0 ) {
@@ -223,32 +296,41 @@ $cbxAuthType.Add_SelectionChanged( {
             EnableButton
         }
     })
+
 $btnUserSourceFile.Add_click( {
         PickUserFile    
         #$navUserNames = $txtUserFile.Text
     })
+
 $btnSavePswdFile.Add_click( {
         SelectDirectory
         #$filepath = $txtPswdFile.Text
     })
+
 $btnAddPerm.Add_Click({
         $PermSelected = $listBoxPermission.SelectedItem
         $listBoxPermission.Items.Remove($PermSelected)
         $listBoxPermissionSelected.Items.Add($PermSelected)
     
     })
-$btnRemoveSelcted.Add_Click({
-    $listBoxPermission.Items.Add($listBoxPermissionSelected.Selecteditem)
-    $listBoxPermissionSelected.Items.Remove($listBoxPermissionSelected.Selecteditem)
-})
-$btnPerformAction.Add_click( {
 
-        $navUserNames = (Get-Content -Path $txtUserFile.Text)       
-        
+$btnRemoveSelcted.Add_Click({
+        $listBoxPermission.Items.Add($listBoxPermissionSelected.Selecteditem)
+        $listBoxPermissionSelected.Items.Remove($listBoxPermissionSelected.Selecteditem)
+    })
+
+$btnPerformAction.Add_click( {
+        #Get Content of Users from the text file
+        $navUserNames = (Get-Content -Path $txtUserFile.Text) 
         $createfile = "UsersPasswords.txt"
-    
         $filepath = $txtPswdFile.Text + "\" + $createfile
-        
+
+        $exist = [System.IO.Directory]::Exists($filepath)
+        if ($exist -eq $false) {
+            Write-Host "File does not exist" -ForegroundColor  Magenta
+            Write-HOst "Creating UserPasswords Files"
+            New-Item $filepath -Type File
+        }
         foreach ($navUserName in $navUserNames) {
             
             function ScramblePassword([string]$inputString) {     
@@ -261,50 +343,42 @@ $btnPerformAction.Add_click( {
             $password += RandomCharacters -length 1 -characters 'ABCDEFGHKLMNOPRSTUVWXYZ'
             $password += RandomCharacters -length 3 -characters '1234567890'
             $password += RandomCharacters -length 2 -characters '!?@#$_-*'
-           
+
             $PlainPassword = $password
             $SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
             $LicenseType = $cbxUsersLicenseTypes.Text
             $instance = $cbxNavInstance.SelectedValue
-        }
-        try {
+        
+            try {
+                if ($cbxAuthType.SelectedIndex -eq 0) {
 
-            if ($cbxAuthType.SelectedIndex -eq 0) {
+                    $logonName = $navUserName + "@" + $env:USERDNSDOMAIN 
 
-                $logonName = $navUserName + "@" + $env:USERDNSDOMAIN 
+                    New-NAVServerUser -WindowsAccount $logonName -ServerInstance $instance -LicenseType "$LicenseType"
+                    foreach ($PermSet in $listBoxPermissionSelected.Items) {
+                        New-NavServerUserPermissionSet -WindowsAccount $logonName -ServerInstance $instance -PermissionSetId "$PermSet"
+                    }
+                }
+                if ($cbxAuthType.SelectedIndex -eq 1) {
 
-                New-NAVServerUser -WindowsAccount $logonName -ServerInstance $instance -LicenseType "$LicenseType"
-                foreach ($PermSet in $listBoxPermissionSelected.Items) {
-                    New-NavServerUserPermissionSet -WindowsAccount $logonName -ServerInstance $instance -PermissionSetId "$PermSet"
+                    $contentfile = "User Name: $navUserName" + $OFS + "Password: $password" + $OFS
+                    Add-Content $filepath "$contentfile" -NoNewline 
+                    New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType"  -ChangePasswordAtNextLogOn 
+                    foreach ($PermSet in $listBoxPermissionSelected.Items) {
+                        New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermSet"
+                    }
+                    Start-Sleep -Milliseconds 1000                  
                 }
             }
-            
-            if ($cbxAuthType.SelectedIndex -eq 1) {
-                $exist = [System.IO.Directory]::Exists($filepath)
-                if ($exist -eq $false) {
-                    Write-Host "File does not exist" -ForegroundColor  Magenta
-                    New-Item $filepath -Type File
-                }
-
-                $contentfile = "User Name: $navUserName" + $OFS + "Password: $password" + $OFS
-                Add-Content $filepath "$contentfile" -NoNewline 
-
-                New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType"  -ChangePasswordAtNextLogOn 
-                foreach ($PermSet in $listBoxPermissionSelected.Items) {
-                    New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermSet"
-                }
-                start-Sleep -Seconds 3
-                explorer $txtPswdFile.Text
+            catch {
+                [System.Windows.MessageBox]::Show("An Error Occured during creation" + $OFS + $_ , 'Error', 'OK', 'Error')
+                break
             }
-
+            Write-Host "User has been added: $navUserName"
         }
-        catch {
-            [System.Windows.MessageBox]::Show("An Error Occured during creation" + $OFS + $_ , 'Error', 'OK', 'Error')
-            break
-        }
-
         [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
+        start-Sleep -Seconds 1
         Exit
-
+        explorer $txtPswdFile.Text
     })
 $Form.ShowDialog() | out-null
