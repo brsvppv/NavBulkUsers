@@ -1,4 +1,7 @@
-
+##https://bcloadtest.tvbg:7048/BGBC14LoadTest/WebClient/OData4/
+#https://bcloadtest.tvbg:7048/BGBC14LoadTest/WebClient/OData4/
+#https://bcloadtest.tvbg/BGBC14LoadTest/WebClient/
+#DynamicsNav://bcloadtest.tvbg:7046/BGBC14LoadTest/
 Function Add-NavBulkUsers {
     Param(
 
