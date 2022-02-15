@@ -384,10 +384,10 @@ $btnPerformAction.Add_click( {
             }
             Write-Host "User has been added: $navUserName"
             }
-        
+            [System.Windows.MessageBox]::Show("Operation Completed", 'Info Massage', 'OK', 'Information')
         start-Sleep -Seconds 1
         Exit
-        [System.Windows.MessageBox]::Show("Operation Completed", 'Info Massage', 'OK', 'Information')
+        
         explorer $txtPswdFile.Text
     })
 $Form.ShowDialog() | out-null
