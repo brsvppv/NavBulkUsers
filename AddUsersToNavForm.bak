@@ -43,34 +43,29 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
-        Title="Create NavUsers From File" Height="375" Width="355" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+        Title="Create NavUsers From File" Height="370" Width="355" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
         <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="365" VerticalAlignment="Center" HorizontalAlignment="Center" Width="345">
             <TextBox Name="txtUserFile" HorizontalAlignment="Left" Height="20" Width="311" Margin="5,31,0,0" Text="Select Username File List" VerticalAlignment="Top"  FontSize="11" IsReadOnly="true"/>
-            <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="3,102,0,0" VerticalAlignment="Top"/>
-            <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="128,102,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0"/>
-            <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="3,124,0,0" VerticalAlignment="Top"/>
-            <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="128,126,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
+            <Label Name="lblsrvc" Content="Service Instance" HorizontalAlignment="Left" Margin="3,105,0,0" VerticalAlignment="Top"/>
+            <ComboBox Name="cbxNavInstance" HorizontalAlignment="Left" Margin="128,105,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0"/>
+            <Label Name="lblLicType" Content="License Type" HorizontalAlignment="Left" Margin="3,130,0,0" VerticalAlignment="Top"/>
+            <ComboBox Name="cbxUsersLicenseTypes" HorizontalAlignment="Left" Margin="128,130,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
                 <ComboBoxItem Content="Full"/>
                 <ComboBoxItem Content="Limited"/>
-            </ComboBox>
-            <Label Name="lblUsrState" Content="User State" HorizontalAlignment="Left" Margin="3,148,0,0" VerticalAlignment="Top"/>
-             <ComboBox Name="cbxUserState" HorizontalAlignment="Left" Margin="128,150,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
-                <ComboBoxItem Content="Enabled"/>
-                <ComboBoxItem Content="Disabled"/>
             </ComboBox>
             <TextBox Name="txtPswdFile" HorizontalAlignment="Left" Height="20" Margin="5,56,0,0" Text="Directory To Export Password File" VerticalAlignment="Top" Width="312" FontSize="11" IsReadOnly="true"/>
             <Button Name="btnUserSourceFile" Content="..." Margin="314,31,0,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Left" Width="27"/>
             <Button Name="btnSavePswdFile" Content="..." HorizontalAlignment="Left" Margin="314,56,0,0" VerticalAlignment="Top" Width="27" Height="20"/>
-            <Button Name="btnPerformAction" Content="Perform Action" Margin="0,330,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Center" Width="335"/>
-            <ComboBox Name="cbxAuthType" HorizontalAlignment="Left" Margin="128,78,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
+            <Button Name="btnPerformAction" Content="Perform Action" Margin="0,323,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Center" Width="335"/>
+            <ComboBox Name="cbxAuthType" HorizontalAlignment="Left" Margin="128,80,0,0" VerticalAlignment="Top" Width="213" SelectedIndex="0">
                 <ComboBoxItem Content="Windows Authentication"/>
                 <ComboBoxItem Content="NAV User Password"/>
             </ComboBox>
             <Label Name="lblAuthType" Content="Authentication " HorizontalAlignment="Left" Margin="3,80,0,0" VerticalAlignment="Top"/>
-            <ListBox Name="listBoxPermission" Width="160"  Height="150" Margin="5,174,179,42"/>
-            <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,174,5,42" HorizontalAlignment="right"/>
-            <Button Name="btnAddPerm" Content=">" Margin="0,174,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>
-            <Button Name="btnRemoveSelcted" Content="&lt;" Margin="0,248,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>      
+            <ListBox Name="listBoxPermission" Width="160"  Height="150" Margin="5,163,179,42"/>
+            <ListBox Name="listBoxPermissionSelected" Width="160"  Height="150" Margin="0,163,5,42" HorizontalAlignment="right"/>
+            <Button Name="btnAddPerm" Content=">" Margin="0,168,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>
+            <Button Name="btnRemoveSelcted" Content="&lt;" Margin="0,243,0,0" VerticalAlignment="Top" Height="75" HorizontalAlignment="Center" Width="16"/>      
         </Grid>
 </Window>
 "@
@@ -352,7 +347,6 @@ $btnPerformAction.Add_click( {
             $PlainPassword = $password
             $SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force
             $LicenseType = $cbxUsersLicenseTypes.Text
-            $UserState = $cbxUserState.Text
             $instance = $cbxNavInstance.SelectedValue
         
             try {
@@ -360,7 +354,7 @@ $btnPerformAction.Add_click( {
 
                     $logonName = $navUserName + "@" + $env:USERDNSDOMAIN 
 
-                    New-NAVServerUser -WindowsAccount $logonName -ServerInstance $instance -State $UserState -LicenseType "$LicenseType" -ErrorAction Stop
+                    New-NAVServerUser -WindowsAccount $logonName -ServerInstance $instance -LicenseType "$LicenseType"
                     foreach ($PermSet in $listBoxPermissionSelected.Items) {
                         New-NavServerUserPermissionSet -WindowsAccount $logonName -ServerInstance $instance -PermissionSetId "$PermSet"
                     }
@@ -369,7 +363,7 @@ $btnPerformAction.Add_click( {
 
                     $contentfile = "User Name: $navUserName" + $OFS + "Password: $password" + $OFS
                     Add-Content $filepath "$contentfile" -NoNewline 
-                    New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType" -State $UserState -ChangePasswordAtNextLogOn -ErrorAction Stop
+                    New-NAVServerUser $instance -UserName $navUserName -Password $SecurePassword -LicenseType "$LicenseType"  -ChangePasswordAtNextLogOn 
                     foreach ($PermSet in $listBoxPermissionSelected.Items) {
                         New-NAVServerUserPermissionSet $instance -UserName $navUserName -PermissionSetId "$PermSet"
                     }
@@ -381,9 +375,8 @@ $btnPerformAction.Add_click( {
                 break
             }
             Write-Host "User has been added: $navUserName"
-            [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
         }
-        
+        [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
         start-Sleep -Seconds 1
         Exit
         explorer $txtPswdFile.Text
