@@ -1,8 +1,8 @@
 ﻿##[Ps1 To Exe]
 ##
 ##Kd3HDZOFADWE8uO1
-##Nc3NCtDXTlGDjqzx7Bp48WbhVG01UuyYtri0+K+56MPPiBneQZUHXRp+lSac
-##Kd3HFJGZHWLWoLaVvnQnhQ==
+##Nc3NCtDXTlCDjvPxzAtZyn/Rb0cdS/myurmp172v6+/pt2jKUIkATFk6lDCxEVm0QL9DDKNDiMIFUBgmEOES8abVFtirXJ0fgOpmOrzY8P8tQVKL4pnj7yqGypjMXj97RUj6YZ5sAS7eyCHuUn6OjIkpjGC6bunzpIt2+1Kb2Bw=
+##Kd3HFJGZHWLWoLaVvnQmhQ==
 ##LM/RF4eFHHGZ7/K1
 ##K8rLFtDXTiW5
 ##OsHQCZGeTiiZ4dI=
@@ -336,6 +336,7 @@ $btnPerformAction.Add_click( {
             Write-HOst "Creating UserPasswords Files"
             New-Item $filepath -Type File
         }
+
         foreach ($navUserName in $navUserNames) {
             
             function ScramblePassword([string]$inputString) {     
@@ -375,17 +376,18 @@ $btnPerformAction.Add_click( {
                     }
                     Start-Sleep -Milliseconds 1000                  
                 }
+                
             }
             catch {
                 [System.Windows.MessageBox]::Show("An Error Occured during creation" + $OFS + $_ , 'Error', 'OK', 'Error')
                 break
             }
             Write-Host "User has been added: $navUserName"
-            [System.Windows.MessageBox]::Show("Created Successfully", 'Info Massage', 'OK', 'Information')
-        }
+            }
         
         start-Sleep -Seconds 1
         Exit
+        [System.Windows.MessageBox]::Show("Operation Completed", 'Info Massage', 'OK', 'Information')
         explorer $txtPswdFile.Text
     })
 $Form.ShowDialog() | out-null
