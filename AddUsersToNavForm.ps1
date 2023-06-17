@@ -1,36 +1,3 @@
-﻿##[Ps1 To Exe]
-##
-##Kd3HDZOFADWE8uO1
-##Nc3NCtDXTlCDjvPxzAtZyn/Rb0cdS/myurmp172v6+/pt2jKUIkATFk6lDCxEVm0QL9DDKNDiMIFUBgmEOES8abVFtirXJ0fgOpmOrzY8P8tQVKL4pnj7yqGypjMXj97RUj6YZ5sAS7eyCHuUn6OjIkpjGC6bunzpIt2+1Kb2Bw=
-##Kd3HFJGZHWLWoLaVvnQmhQ==
-##LM/RF4eFHHGZ7/K1
-##K8rLFtDXTiW5
-##OsHQCZGeTiiZ4dI=
-##OcrLFtDXTiW5
-##LM/BD5WYTiiZ4tI=
-##McvWDJ+OTiiZ4tI=
-##OMvOC56PFnzN8u+Vs1Q=
-##M9jHFoeYB2Hc8u+Vs1Q=
-##PdrWFpmIG2HcofKIo2QX
-##OMfRFJyLFzWE8uK1
-##KsfMAp/KUzWI0g==
-##OsfOAYaPHGbQvbyVvnQnqxugEiZ7PKU=
-##LNzNAIWJGmPcoKHc7Do3uAu+DDhlPovL69Y=
-##LNzNAIWJGnvYv7eVvnRU907vVm1rStyVuLuux5L80cva+xDKTIgHKQ==
-##M9zLA5mED3nfu77Q7TV64AuzAgg=
-##NcDWAYKED3nfu77Q7TV64AuzAgg=
-##OMvRB4KDHmHQvbyVvnRU907vVm1rStyVuLuux5L80cva9Af6CbgBRV83ozr5Flj9f+AdWLUzvd0UNQ==
-##P8HPFJGEFzWE8tI=
-##KNzDAJWHD2fS8u+Vgw==
-##P8HSHYKDCX3N8u+Vgw==
-##LNzLEpGeC3fMu77Ro2k3hQ==
-##L97HB5mLAnfMu77Ro2k3hQ==
-##P8HPCZWEGmaZ7/K1
-##L8/UAdDXTlCDjpH5zAFT2WznVkA+bPm1uKCF0Y23yvnpqTblaJ4Qa0F7nQf9En6uXOABG/ANsbE=
-##Kc/BRM3KXxU=
-##
-##
-##fd6a9f26a06ea3bc99616d4851b372ba
 [Net.ServicePointManager]::SecurityProtocol = 'Tls12'
 [void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
